@@ -8,4 +8,9 @@ class Getters
     {
         
     }
+    
+    public function getName()
+    {
+        
+    }
 }

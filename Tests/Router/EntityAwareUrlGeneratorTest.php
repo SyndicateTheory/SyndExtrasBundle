@@ -35,18 +35,14 @@ class EntityAwareUrlGeneratorTest extends \PHPUnit_Framework_TestCase
     
     public function testObjectWithGetters()
     {
-        $routes = $this->getRoutes('test', new Route('/users/{id}-{name}'));
+        $routes = $this->getRoutes('test', new Route('/users/{id}'));
         
         $mock = $this->getMock('Synd\ExtrasBundle\Tests\Examples\Getters');
         $mock->expects($this->any())
              ->method('getId')
              ->will($this->returnValue(1));
         
-        $mock->expects($this->any())
-             ->method('getName')
-             ->will($this->returnValue('ted'));
-        
-        $this->assertEquals('/users/1-ted', $this->getGenerator($routes)->generate('test', $mock));
+        $this->assertEquals('/users/1', $this->getGenerator($routes)->generate('test', $mock));
     }
     
     public function testTooManyGettersAreIgnored()
@@ -58,7 +54,23 @@ class EntityAwareUrlGeneratorTest extends \PHPUnit_Framework_TestCase
              ->method('getId')
              ->will($this->returnValue(1));
         
+        $mock->expects($this->any())
+             ->method('getName')
+             ->will($this->returnValue('ted'));
+        
         $this->assertEquals('/users/1', $this->getGenerator($routes)->generate('test', $mock));
+    }
+    
+    public function testMultipleCapitalLetters()
+    {
+        $routes = $this->getRoutes('test', new Route('/users/{usernameCanonical}'));
+        
+        $mock = $this->getMock('Synd\ExtrasBundle\Tests\Examples\GettersCamelCased');
+        $mock->expects($this->any())
+             ->method('getUsernameCanonical')
+             ->will($this->returnValue('ted'));
+        
+        $this->assertEquals('/users/ted', $this->getGenerator($routes)->generate('test', $mock));
     }
     
     protected function getGenerator(RouteCollection $routes)

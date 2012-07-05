@@ -2,9 +2,9 @@
 
 namespace Synd\ExtrasBundle\Tests\Examples;
 
-class Getters
+class GettersCamelCased
 {
-    public function getId()
+    public function getUsernameCanonical()
     {
         
     }
