@@ -27,8 +27,8 @@ class EntityAwareUrlGeneratorTest extends \PHPUnit_Framework_TestCase
     
         $mock = $this->getMock('Synd\ExtrasBundle\Tests\Examples\ToArray');
         $mock->expects($this->any())
-        ->method('toArray')
-        ->will($this->returnValue(array('id' => '1', 'name' => 'ted')));
+             ->method('toArray')
+             ->will($this->returnValue(array('id' => '1', 'name' => 'ted')));
     
         $this->assertEquals('/users/1', $this->getGenerator($routes)->generate('test', $mock));
     }
@@ -61,8 +61,6 @@ class EntityAwareUrlGeneratorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/users/1', $this->getGenerator($routes)->generate('test', $mock));
     }
     
-    
-    
     protected function getGenerator(RouteCollection $routes)
     {
         return new EntityAwareUrlGenerator($routes, new RequestContext());
@@ -75,6 +73,4 @@ class EntityAwareUrlGeneratorTest extends \PHPUnit_Framework_TestCase
         
         return $routes;
     }
-    
-    
 }
