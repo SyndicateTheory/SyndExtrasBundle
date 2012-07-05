@@ -15,7 +15,7 @@ class EntityAwareUrlGenerator extends UrlGenerator
     protected function doGenerate($variables, $defaults, $requirements, $tokens, $parameters, $name, $absolute)
     {
         if (is_object($parameters)) {
-            $parameters = $this->getObjectVariables($parameters);
+            $parameters = $this->getObjectVariables($parameters, $variables);
         }
         
         return parent::doGenerate($variables, $defaults, $requirements, $tokens, $parameters, $name, $absolute);
@@ -24,31 +24,22 @@ class EntityAwareUrlGenerator extends UrlGenerator
     /**
      * Extracts key/value pairs for an object
      */
-    protected function getObjectVariables($object)
+    protected function getObjectVariables($object, $expected)
     {
         if (method_exists($object, 'toArray')) {
-            return $object->toArray();
-        }
-        
-        $out = array();
-        
-        if (!empty($this->classMethods[$class = get_class($object)])) {
-            foreach ($this->classMethods[$class] as $key => $method) {
-                $out[$key] = $object->$method();
+            $received = $object->toArray();
+            foreach (array_intersect(array_keys($received), $expected) as $requiredParam) {
+                $out[$requiredParam] = $received[$requiredParam];
             }
             
             return $out;
         }
         
-        $this->classMethods[$class] = array();
-        foreach (get_class_methods($object) as $method) {
-            if (strpos($method, 'get') === 0) {
-                $value = $object->$method();
+        $out = array();
         
-                if (is_int($value) or is_string($value)) {
-                    $this->classMethods[$class][$key = strtolower(substr($method, 3))] = $method;
-                    $out[$key] = $method;
-                }
+        foreach ($expected as $key) {
+            if (method_exists($object, $method = 'get' . ucfirst($key))) {
+                $out[$key] = $object->$method();
             }
         }
         
